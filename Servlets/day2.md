@@ -44,8 +44,8 @@
 
 ### 서블릿이 가진 세개의 이름들을 서로 매핑한다.
 * 이 작업은 배포 서술자(DD, Development Descriptor)라는 XML파일에서 이루어진다.
-* <servlet>에는 내부 이름과 실제 파일명을 매핑한다.
-* <servlet-mapping>에는 내부 이름과 URL을 매핑한다.
+* `<servlet>`에는 내부 이름과 실제 파일명을 매핑한다.
+* `<servlet-mapping>`에는 내부 이름과 URL을 매핑한다.
 * DD는 서블릿 매핑 말고도 여러가지 기능을 가지고 있다.
 
 
