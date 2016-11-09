@@ -60,6 +60,16 @@ HTTP 메소드에는 GET, POST, HEAD, TRACE, PUT, DELETE, OPTIONS, CONNECT 등�
 * Request의 입력 스트림
 `InputStream input = request.getInputStream();`
 
+###Response 객체의 I/O
+* 출력스트림으로 HTML만 보낼 수 있는 것이 아니다. 이외의 것(예: JAR)을 전송하려면 바이트로 읽어들여 스트림에 기록해야한다.
+* 컨텐츠 타입은 브라우저에 내려보내는 것이 무엇인지를 알려준다. == MIME 타입
+* 출력 방식에는 문자와 바이트가 있으며, 문자는 Writer, 스트림은 OutputStream을 사용한다.
+* Response 헤더에는 값을 설정하거나 새로 추가할 수 있다.
+
+###서블릿은 응답을 하지 않을 수도 있다.
+* 서블릿은 요청의 방향을 바꿀 수 있다.
+* 클라이언트에게 맡기는 것을 리다이렉트, 서버 내에서 처리하는 것을 요청 디스패치라고 한다.
+
 
 ##정리
 ###컨테이너는 서블릿을 로딩한다. 그 다음 디폴트 생성자를 호출하고, init() 메소드를 실행한다.
@@ -71,3 +81,7 @@ HTTP 메소드에는 GET, POST, HEAD, TRACE, PUT, DELETE, OPTIONS, CONNECT 등�
 ###POST에는 몸체가 있다. GET은 몸체가 없다.
 ###GET은 멱등이다. POST는 멱등이 아니다.
 ###디폴트 HTML 폼은 GET이다.
+###클라이언트로 데이터를 보내기 위해 Response 객체를 사용한다.
+###Response 객체로 헤더 설정, 오류 전송, 쿠키 추가 등을 할 수 있다.
+###실제 프로젝트에서는 HTML 응답을 보낼때 JSP를 사용하지만, 바이너리 파일을 전송하기 위해서 Response 스트림이 존재한다.
+###요청에 응답하지 않고, 리다이렉트나 디스패치를 통하여 다른 곳으로 넘길 수 있다.
