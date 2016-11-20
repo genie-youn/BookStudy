@@ -113,9 +113,9 @@ public class MyServletContextListener implements ServletContextListener (
 이 중 리턴 타입이 가장 큰 차이점이다.
 
 ###세 가지 속성의 생존범위(Scope)
-Context : 애플리케이션 안의 모든 것
-Session : 특정 HttpSession에 접근 권한을 가진 것만
-Request : 특정 ServletRequest에 접근 권한을 가진 것만
+* Context : 애플리케이션 안의 모든 것
+* Session : 특정 HttpSession에 접근 권한을 가진 것만
+* Request : 특정 ServletRequest에 접근 권한을 가진 것만
 
 ###Context 생존범위는 스레드 안전하지 못하다.
 애프리케이션에 있는 누군가가 컨텍스트 속성에 접근할 수 있다. (다른 서블릿이든, 같은 서블릿의 다른 스레드든)
