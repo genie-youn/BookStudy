@@ -124,7 +124,7 @@ Request : 특정 ServletRequest에 접근 권한을 가진 것만
 ###어떻게 하면 해결할 수 있나?
 서비스 메소드를 동기화 방법은 한 서블릿 인스턴스에서의 스레드 접근은 막을 수 있지만, 다른 스레드에서의 접근은 막을 수 없다. -> 컨텍스트에 락을 걸면 된다.
 ```
-**synchronized(getServletContext())** {
+synchronized(getServletContext()) {
 	getServletContext().setAtrribute("foo", "22");
 	getServletContext().setAtrribute("bar", "44");
 
@@ -137,7 +137,7 @@ Request : 특정 ServletRequest에 접근 권한을 가진 것만
 ```
 HttpSession session = request.getSession();
 
-**synchronized(session)** {
+synchronized(session) {
 	getServletContext().setAtrribute("foo", "22");
 	getServletContext().setAtrribute("bar", "44");
 
