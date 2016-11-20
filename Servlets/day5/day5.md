@@ -99,16 +99,16 @@ public class MyServletContextListener implements ServletContextListener (
 
 ###속성은 파라미터가 아니다.
 **속성**
-타입 : Appication/context, Request, Session
-설정 메소드 : setAtrribute(String name, Object value)
-리턴 타입 : Object
-참조 메소드 : getAtrribute(String name)
+* 타입 : Appication/context, Request, Session
+* 설정 메소드 : setAtrribute(String name, Object value)
+* 리턴 타입 : Object
+* 참조 메소드 : getAtrribute(String name)
 
 **파라미터**
-타입 : Appication/context 초기화 파라미터, Request 파라미터, Servlet 초기화 파라미터(Session 파라미터라는건 없다.)
-설정 메소드 : 오직 런타임에서만 DD에서 가능
-리턴 타입 : String
-참조 메소드 : getInitParamter(String name)
+* 타입 : Appication/context 초기화 파라미터, Request 파라미터, Servlet 초기화 파라미터(Session 파라미터라는건 없다.)
+* 설정 메소드 : 오직 런타임에서만 DD에서 가능
+* 리턴 타입 : String
+* 참조 메소드 : getInitParamter(String name)
 
 이 중 리턴 타입이 가장 큰 차이점이다.
 
