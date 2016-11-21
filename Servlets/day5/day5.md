@@ -91,3 +91,74 @@ public class MyServletContextListener implements ServletContextListener (
 ```
 
 ###리스너 클래스를 만들었다. 그렇다면 이 클래스를 어디에, 누가 배포하고 인스턴스화 하는가? 이벤트 등록과 속성 설정 방법은?
+컨테이너가 다 한다. 속성 클래스를 만들어 인스턴스화 하고, DD에 파라미터를 입력한다. 리스너는 이벤트를 감지하여 속성을 설정하고 서블릿에서 그 속성을 가져와 사용한다.
+
+###속성이란 정확히 무엇인가?
+속성은 3개의 API 객체, 즉 ServletContext, HttpServletRequest, HttpSession 객체 중 하나에 설정해놓는 객체를 말한다.
+내부적으로 이것이 어떻게 구현되어 있는지 알 수 없고, 신경 쓸 필요도 없다. 우리는 누가 이 값을 볼 수 있으며, 얼마나 오랫동안 이 객체가 살아있는지만 신경쓰면 된다.(Scope)
+
+###속성은 파라미터가 아니다.
+**속성**
+* 타입 : Appication/context, Request, Session
+* 설정 메소드 : setAtrribute(String name, Object value)
+* 리턴 타입 : Object
+* 참조 메소드 : getAtrribute(String name)
+
+**파라미터**
+* 타입 : Appication/context 초기화 파라미터, Request 파라미터, Servlet 초기화 파라미터(Session 파라미터라는건 없다.)
+* 설정 메소드 : 오직 런타임에서만 DD에서 가능
+* 리턴 타입 : String
+* 참조 메소드 : getInitParamter(String name)
+
+이 중 리턴 타입이 가장 큰 차이점이다.
+
+###세 가지 속성의 생존범위(Scope)
+* Context : 애플리케이션 안의 모든 것
+* Session : 특정 HttpSession에 접근 권한을 가진 것만
+* Request : 특정 ServletRequest에 접근 권한을 가진 것만
+
+###Context 생존범위는 스레드 안전하지 못하다.
+애프리케이션에 있는 누군가가 컨텍스트 속성에 접근할 수 있다. (다른 서블릿이든, 같은 서블릿의 다른 스레드든)
+이는 임계영역(Critical section)의 상호배제(Mutual Exclusive) 문제와 동일하다.
+
+###어떻게 하면 해결할 수 있나?
+서비스 메소드를 동기화 방법은 한 서블릿 인스턴스에서의 스레드 접근은 막을 수 있지만, 다른 스레드에서의 접근은 막을 수 없다. -> 컨텍스트에 락을 걸면 된다.
+```
+synchronized(getServletContext()) {
+	getServletContext().setAtrribute("foo", "22");
+	getServletContext().setAtrribute("bar", "44");
+
+	...
+}
+```
+
+###세션 속성은 스레드 안전인가?
+하나의 클라이언트(웹 브라우저 1개)에서는 스레드 안전이라고 말할 수 있겠으나 클라이언트가 여러 개고 동시에 요청을 보낸다면 동기화가 필요하다. 이는 HttpSession에서 진행된다.
+```
+HttpSession session = request.getSession();
+
+synchronized(session) {
+	getServletContext().setAtrribute("foo", "22");
+	getServletContext().setAtrribute("bar", "44");
+
+	...
+}
+```
+
+**동기화를 사용할 때는 신중을 기해야한다. 무언가를 보호할 때 동기화를 사용하되 '가능한한 짧은 시간동안' 걸어야한다.**
+
+###Single Tread Model(STM)은 인스턴스 변수를 보호하려고 설계되었다.
+SingleThreadModel 인터페이스를 구현하면 동기화를 보장해준다. 그 방법은 크게 두가지이다.
+
+1. 요청을 큐로 처리하는 방법 : 하나의 컨테이너가 요청 큐에 요청을 쌓고 하나씩 꺼내서 서블릿에 뿌린다.
+2. 요청을 풀링하는 방법 : 각 요청을 한 서블릿의 서로 다른 인스턴스에 각각 뿌린다.
+
+하지만 STM 방법도 클래스 변수에는 별 도움이 되지 못한다. -> 요즘에 안쓴다. (서블릿 API에 STM이 아예 없음)
+
+###오직 Request 속성과 지역 변수만이 스레드 안전이다.
+STM은 사용하면 안된다. 그러면 어떻게 해야하는가?
+
+1. 변수를 인스턴스 변수가 아닌 서비스 메소드의 지역변수로 선언한다.
+2. Context, Session, Request 중에서 가장 적당한 속성의 생존범위를 사용한다.
+
+###Response 객체를 넘겨주고 나면(flush) 그 후에 Request를 넘기려고 해도 소용없다. 이것은 IllegalStateException을 띄운다.
